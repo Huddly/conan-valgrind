@@ -17,7 +17,8 @@ class ValgrindConan(ConanFile):
     description = "Valgrind is an instrumentation framework for building dynamic analysis tools."
     topics = ("valgrind", "memory", "debug")
     # settings = "os", "arch"
-    settings = "os_build", "arch_build"
+    settings = "os", "arch", "compiler"
+    generators='virtualenv','cmake','cmake_find_package'
 
     @property
     def _package_name(self):
@@ -39,8 +40,8 @@ class ValgrindConan(ConanFile):
     def build(self):
         autotools = AutoToolsBuildEnvironment(self)
         autotools.configure(configure_dir=self._package_name,
-            args=["--enable-lto=yes",
-                "--enable-only64bit" if self.settings.arch_build == "x86_64" else ""
+                            args=["--enable-lto=yes",
+                                  "--host=aarch64-buildroot-linux-musl"  if self.settings.arch == "armv8" else ""
             ])
         autotools.make()
         autotools.install()
